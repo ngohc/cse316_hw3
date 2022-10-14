@@ -22,7 +22,8 @@ createPlaylist = (req, res) => {
     if (!playlist) {
         return res.status(400).json({ success: false, error: err })
     }
-
+    
+    // save creates a new record
     playlist
         .save()
         .then(() => {
@@ -86,10 +87,69 @@ getPlaylistPairs = async (req, res) => {
         }
     }).catch(err => console.log(err))
 }
+// PUT
+updatePlaylistById = async (req, res) => {
+    const body = req.body
+    console.log("updated playlist: " + JSON.stringify(body));
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'No body',
+        })
+    }
+
+    Playlist.findOne({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Playlist not found',
+            })
+        }
+        list.name = body.name
+        list.items = body.items
+        list
+            .save()
+            .then(() => {
+                console.log("Successfully updated playlist");
+                return res.status(200).json({
+                    success: true,
+                    id: list._id,
+                    message: `Updated playlist ${list.name}`,
+                })
+            })
+            .catch(error => {
+                console.log("Failed to update playlist: " + JSON.stringify(error));
+                return res.status(404).json({
+                    error,
+                    message: `Did not update playlist ${list.name}`,
+                })
+            })
+    })
+}
+// DELETE
+deletePlaylistById = async (req, res) => {
+    await Playlist.findOneAndDelete({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+
+        if (!list) {
+            return res
+                .status(404)
+                .json({ success: false, error: `Playlist not found` })
+        }
+
+        return res.status(200).json({ success: true, data: list })
+    }).catch(err => console.log(err))
+}
+
+
 
 module.exports = {
     createPlaylist,
     getPlaylists,
+    updatePlaylistById,
+    deletePlaylistById,
     getPlaylistPairs,
     getPlaylistById
 }
