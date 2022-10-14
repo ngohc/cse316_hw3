@@ -16,6 +16,7 @@ const ListSelector = () => {
     }, []);
 
     function handleCreateNewList() {
+        console.log("new list");
         store.createNewList();
     }
     let listCard = "";
@@ -37,11 +38,11 @@ const ListSelector = () => {
                     id="add-list-button"
                     onClick={handleCreateNewList}
                     className="playlister-button"
-                    value="+" />
+                    value="+" 
+                />
                 Your Lists
-            </div>                {
-                    listCard
-                }
+            </div>                
+            {listCard}
             </div>
         </div>)
 }
