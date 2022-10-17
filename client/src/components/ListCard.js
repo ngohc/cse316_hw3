@@ -1,6 +1,7 @@
 import { useContext, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import { GlobalStoreContext } from '../store'
+import { DeleteListModal } from './DeleteListModal'
 /*
     This is a card in our list of playlists. It lets select
     a list for editing and it has controls for changing its 
@@ -23,6 +24,7 @@ function ListCard(props) {
 
             // CHANGE THE CURRENT LIST
             store.setCurrentList(_id);
+            console.log("bloop change list:" + store.currentList.name)
         }
     }
 
@@ -50,6 +52,17 @@ function ListCard(props) {
         setText(event.target.value );
     }
 
+    async function handleDeleteList(event) {
+        event.stopPropagation();
+        console.log("open modal")
+        console.log("id: " + idNamePair._id);
+        store.markListForDeletion(idNamePair._id);
+        // let _id = event.target.id;
+        // _id = ("" + _id).substring("delete-list-".length);
+        // store.markListForDeletion(_id);
+
+    }
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -75,6 +88,7 @@ function ListCard(props) {
                 type="button"
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
+                onClick={handleDeleteList}
                 value={"\u2715"}
             />
             <input

@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import ListCard from './ListCard.js'
 import { GlobalStoreContext } from '../store'
+import DeleteListModal from '../components/DeleteListModal.js';
+
 /*
     This React component lists all the playlists in the UI.
     
@@ -43,6 +45,7 @@ const ListSelector = () => {
                 Your Lists
             </div>                
             {listCard}
+            <DeleteListModal />
             </div>
         </div>)
 }
