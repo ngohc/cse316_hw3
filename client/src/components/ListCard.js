@@ -57,10 +57,6 @@ function ListCard(props) {
         console.log("open modal")
         console.log("id: " + idNamePair._id);
         store.markListForDeletion(idNamePair._id);
-        // let _id = event.target.id;
-        // _id = ("" + _id).substring("delete-list-".length);
-        // store.markListForDeletion(_id);
-
     }
 
     let selectClass = "unselected-list-card";
