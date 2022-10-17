@@ -106,7 +106,7 @@ updatePlaylistById = async (req, res) => {
             })
         }
         list.name = body.name
-        list.items = body.items
+        list.songs = body.songs
         list
             .save()
             .then(() => {
