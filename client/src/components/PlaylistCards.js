@@ -14,7 +14,8 @@ function PlaylistCards() {
 
     if (store.currentList === null) {
         return (
-            <div id="playlist-cards"></div>
+            <div id="playlist-cards">
+            </div>
         )
     }
     else {

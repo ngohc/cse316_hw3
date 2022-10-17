@@ -6,7 +6,7 @@ function DeleteListModal() {
 
     let playlistName = "asd";
     if (store.currentList) {
-        playlistName = store.currentList.name;
+        playlistName = store.listMarkedForDeletion;
     } else {
         console.log("No current playlist")
     }
