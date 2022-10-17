@@ -1,6 +1,7 @@
-import { createContext, useState } from 'react'
+import { createContext, StrictMode, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import CreateSong_Transaction from '../transactions/CreateSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -19,6 +20,7 @@ export const GlobalStoreActionType = {
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
+    ADD_NEW_SONG: "ADD_NEW_SONG"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -61,6 +63,16 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 })
             }
+            // ADD NEW SONG
+            // case GlobalStoreActionType.ADD_NEW_SONG: {
+            //     return setStore({
+            //         idNamePairs: store.idNamePairs,
+            //         currentList: payload,
+            //         newListCounter: store.newListCounter,
+            //         listNameActive: false,
+            //         listMarkedForDeletion: null
+            //     })
+            // }
             // CREATE A NEW LIST
             case GlobalStoreActionType.CREATE_NEW_LIST: {
                 return setStore({
@@ -248,13 +260,40 @@ export const useGlobalStore = () => {
                     });
                     store.history.push("/playlist/" + playlist._id);
                 }
+
             }
         }
         asyncSetCurrentList(id);
     }
     store.getPlaylistSize = function() {
+        console.log("size of playlist:" + store.currentList.songs.length);
         return store.currentList.songs.length;
     }
+    
+    store.addNewSong = function () {
+        let index = store.getPlaylistSize();
+        store.addCreateSongTrans(index, "Untitled", "Unknown", "dQw4w9WgXcQ");
+    }
+
+    store.createSong = function(index, song) {
+        let list = store.currentList;
+        list.songs.splice(index, 0, song);
+        storeReducer({
+            type: GlobalStoreActionType.SET_CURRENT_LIST,
+            payload: list
+        });
+    }
+
+    store.addCreateSongTrans = function(index, title, artist, youTubeId) {
+        let song = {
+            title: title,
+            artist: artist,
+            youTubeId: youTubeId
+        };
+        let transaction = new CreateSong_Transaction(this, index, song);
+        tps.addTransaction(transaction);
+    }
+
     store.undo = function () {
         tps.undoTransaction();
     }

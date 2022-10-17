@@ -12,7 +12,13 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
-    return (
+    if (store.currentList === null) {
+        return (
+            <div id="playlist-cards"></div>
+        )
+    }
+    else {
+        return (
         <div id="playlist-cards">
         {
             store.currentList.songs.map((song, index) => (
@@ -25,7 +31,8 @@ function PlaylistCards() {
             ))
         }
         </div>
-    )
+        )
+    }
 }
 
 export default PlaylistCards;
