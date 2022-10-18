@@ -3,9 +3,9 @@ import { GlobalStoreContext } from '../store'
 
 function EditSongModal() {
     const { store } = useContext(GlobalStoreContext);
-    const [ title, setTitle ] = useState("bloop");        
-    const [ artist, setArtist ] = useState("");        
-    const [ youtubeId, setYouTubeId ] = useState("");   
+    const [ title, setTitle ] = useState(store.songMarkedForEditTitle);        
+    const [ artist, setArtist ] = useState(store.songMarkedForEditArtist);        
+    const [ youtubeId, setYouTubeId ] = useState(store.songMarkedForEditYoutubeId);   
 
     function handleConfirmEditSong(event) {
         let newSongData = {
