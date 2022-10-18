@@ -2,6 +2,7 @@ import { createContext, StrictMode, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
 import CreateSong_Transaction from '../transactions/CreateSong_Transaction';
+import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -36,8 +37,10 @@ export const useGlobalStore = () => {
         newListCounter: 0,
         listNameActive: false,
         listMarkedForDeletion: null,
+        listNameForDeletion: null,
         songMarkedForRemoval: null,
-        toRemoveIndex: null
+        toRemoveIndex: null,
+        toRemoveTitle: null
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -53,6 +56,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 });
@@ -65,6 +69,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 })
@@ -77,6 +82,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 })
@@ -89,6 +95,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 });
@@ -100,7 +107,8 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
-                    listMarkedForDeletion: payload,
+                    listMarkedForDeletion: payload.id,
+                    listNameForDeletion: payload.name,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 });
@@ -113,7 +121,9 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     songMarkedForRemoval: payload.song,
-                    toRemoveIndex: payload.toRemoveIndex
+                    listNameForDeletion: null,
+                    toRemoveIndex: payload.toRemoveIndex,
+                    toRemoveTitle: payload.toRemoveTitle
                 });
             }
             // UPDATE A LIST
@@ -124,6 +134,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 });
@@ -136,6 +147,7 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     listNameActive: true,
                     listMarkedForDeletion: null,
+                    listNameForDeletion: null,
                     songMarkedForRemoval: null,
                     toRemoveIndex: null
                 });
@@ -169,10 +181,13 @@ export const useGlobalStore = () => {
     }
 
     // 1. mark list for deletion (NO DELETION YET)
-    store.markListForDeletion = function (id) {
+    store.markListForDeletion = function (id, playlistName) {
         storeReducer({
             type: GlobalStoreActionType.MARK_LIST_FOR_DELETION,
-            payload: id
+            payload: {
+                name: playlistName,
+                id: id
+            }
         });
         store.showDeleteListModal();
     }
@@ -294,6 +309,8 @@ export const useGlobalStore = () => {
                     type: GlobalStoreActionType.SET_CURRENT_LIST,
                     payload: store.currentList
                 });
+            } else {
+                console.log("Response unsuccessful");
             }
         }
         asyncUpdateCurrentList();
@@ -327,30 +344,33 @@ export const useGlobalStore = () => {
         store.updateCurrentList();
     }
 
-    store.markSongForRemoval = function(song, index) {
+    store.markSongForRemoval = function(songName, song, index) {
         storeReducer({
             type: GlobalStoreActionType.MARK_SONG_FOR_REMOVAL,
-            // payload: title
             payload: {
                 toRemoveIndex: index,
-                song: song
+                song: song,
+                toRemoveTitle: songName
             }
         });
         store.showRemoveSongModal();
     }
 
-    store.removeSong = function(index) {
-        let songArr = store.currentList.songs;
-        let songRemovedName = songArr[index];
-        songArr.splice(index,1);
-        console.log("Successfully removed " + songRemovedName);
-        store.updateCurrentList();
+    store.removeMarkedSong = function () {
+        store.removeSong(store.toRemoveIndex);
         store.hideRemoveSongModal();
     }
+    // 3. actually removes the song and update in backend
+    store.removeSong = function(index) {
+        let songArr = store.currentList.songs;
+        songArr.splice(index,1);
+        store.updateCurrentList();
+    }
 
-    // store.addRemoveSongTrans = function(index) {
-
-    // }
+    store.addRemoveSongTrans = function(song, index) {
+        let transaction = new RemoveSong_Transaction(this, index, song);
+        tps.addTransaction(transaction);
+    }
 
     store.showRemoveSongModal = function () {
         let removeSongModal = document.getElementById("remove-song-modal");

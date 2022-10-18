@@ -52,7 +52,8 @@ function ListCard(props) {
 
     async function handleDeleteList(event) {
         event.stopPropagation();
-        store.markListForDeletion(idNamePair._id);
+        console.log("id name:" + idNamePair.name);
+        store.markListForDeletion(idNamePair._id, idNamePair.name);
     }
 
     let selectClass = "unselected-list-card";

@@ -6,7 +6,7 @@ function RemoveSongModal() {
 
     let songName = "asd";
     if (store.currentList) {
-        songName = store.songMarkedForRemoval;
+        songName = store.toRemoveTitle;
         console.log("song name:" + songName);
         console.log("remove index:" + store.toRemoveIndex);
 
@@ -15,9 +15,7 @@ function RemoveSongModal() {
     }
 
     function handleConfirmRemoveSong(event) {
-        // actually deletes it
-            // only want to delete on Confirm
-        store.removeSong(store.toRemoveIndex);   // need to add it
+        store.addRemoveSongTrans(store.songMarkedForRemoval, store.toRemoveIndex);
     }
 
     function handleCancelRemoveSong(event) {

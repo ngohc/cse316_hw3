@@ -9,7 +9,7 @@ function SongCard(props) {
     let cardClass = "list-card unselected-list-card";
 
     function handleRemoveSong() {
-        store.markSongForRemoval(song.title, index);
+        store.markSongForRemoval(song.title, song, index);
     }
 
     return (

@@ -5,15 +5,9 @@ function DeleteListModal() {
     const { store } = useContext(GlobalStoreContext);
 
     let playlistName = "asd";
-    if (store.currentList) {
-        playlistName = store.listMarkedForDeletion;
-    } else {
-        console.log("No current playlist")
-    }
+    playlistName = store.listNameForDeletion;
 
     function handleConfirmDeleteList(event) {
-        // actually deletes it
-            // only want to delete on Confirm
         store.deleteMarkedList();
     }
 
