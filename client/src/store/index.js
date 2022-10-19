@@ -4,6 +4,7 @@ import api from '../api'
 import CreateSong_Transaction from '../transactions/CreateSong_Transaction';
 import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction';
 import UpdateSong_Transaction from '../transactions/UpdateSong_Transaction';
+import MoveSong_Transaction from '../transactions/MoveSong_Transaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -476,6 +477,40 @@ export const useGlobalStore = () => {
     }
     store.redo = function () {
         tps.doTransaction();
+    }
+
+    store.hasTransactionToUndo = function() {
+        return tps.hasTransactionToUndo();
+    }
+
+    store.hasTransactionToRedo = function() {
+        return tps.hasTransactionToRedo();
+    }
+
+    store.moveSong = function (start, end) {
+        start -= 1;
+        end -= 1;
+        if (start+1 < end+1) {
+            let temp = store.currentList.songs[start+1];
+            for (let i = start+1; i < end+1; i++) {
+                store.currentList.songs[i] = store.currentList.songs[i + 1];
+            }
+            store.currentList.songs[end+1] = temp;
+        }
+        else if (start+1 > end+1) {
+            let temp = store.currentList.songs[start+1];
+            for (let i = start+1; i > end+1; i--) {
+                store.currentList.songs[i] = store.currentList.songs[i - 1];
+            }
+            store.currentList.songs[end+1] = temp;
+        }
+
+        store.updateCurrentList();
+    }
+
+    store.addMoveItemTransaction = function (start, end) {
+        let transaction = new MoveSong_Transaction(store, start, end);
+        tps.addTransaction(transaction);
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME

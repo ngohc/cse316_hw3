@@ -22,6 +22,14 @@ const ListSelector = () => {
         store.createNewList();
     }
     let listCard = "";
+
+    // is listnameactive or store.currentlist
+    // canaddlist = false
+    let canAddSong = false;
+    if (store.listNameActive && !store.currentList===null) {
+        canAddSong = true;
+    }
+
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
             <ListCard
@@ -38,6 +46,7 @@ const ListSelector = () => {
                 <input
                     type="button"
                     id="add-list-button"
+                    disabled={canAddSong}
                     onClick={handleCreateNewList}
                     className="playlister-button"
                     value="+" 
